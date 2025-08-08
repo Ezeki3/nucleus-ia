@@ -7,6 +7,8 @@ const openrouter = createOpenRouter({
 })
 
 const form = document.querySelector('#form');
+const app = document.querySelector('#app');
+const submitBtn = document.querySelector('#submit');
 
 form.addEventListener('submit', async e => {
   e.preventDefault();
@@ -18,15 +20,30 @@ form.addEventListener('submit', async e => {
     return
   }
 
+  submitBtn.disabled = true;
+
   const result = streamText({
-    model: openrouter('google/gemini-2.0-flash-exp:free'),
-    // model:('deepseek/deepseek-r1-0528-qwen3-8b:free'),
-    // model:('meta-llama/llama-3.3-70b-instruct:free'),
-    prompt: prompt
-  })
+    // model: openrouter('google/gemini-2.0-flash-exp:free'),
+    // model: openrouter('deepseek/deepseek-r1-0528-qwen3-8b:free'),
+    // model: openrouter('meta-llama/llama-3.3-70b-instruct:free'),
+    // model: openrouter('deepseek/deepseek-r1:free'),
+    model: openrouter("meta-llama/llama-3-8b-instruct"),
+    // model: openrouter("mistral/mistral-7b-instruct"),
+
+    prompt: prompt,
+    // system: 'Eres un niño de 4 años',
+    // system: 'Eres una persona de 98 años',
+    // temperature:0
+  });
+
+  while( app.firstChild ){
+    app.removeChild(app.firstChild)
+  }
 
   for await ( const text of result.textStream) {
-    console.log(text)
+    app.append(text)   
   }
+
+  submitBtn.disabled = false;
   
 })
