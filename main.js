@@ -1,6 +1,6 @@
 import './style.css'
 import { createOpenRouter } from '@openrouter/ai-sdk-provider';
-import { generateText } from 'ai';
+import { streamText } from 'ai';
 
 const openrouter = createOpenRouter({
   apiKey: import.meta.env.VITE_OPENROUTER_KEY
@@ -18,13 +18,15 @@ form.addEventListener('submit', async e => {
     return
   }
 
-  const result = await generateText({
+  const result = streamText({
     model: openrouter('google/gemini-2.0-flash-exp:free'),
     // model:('deepseek/deepseek-r1-0528-qwen3-8b:free'),
     // model:('meta-llama/llama-3.3-70b-instruct:free'),
     prompt: prompt
   })
 
-  console.log(result)
+  for await ( const text of result.textStream) {
+    console.log(text)
+  }
   
 })
